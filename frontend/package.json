@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "generate-icons": "node scripts/generate-icons.js",
     "clean": "rm -rf dist node_modules/.vite"
   },
   "dependencies": {
@@ -34,7 +33,6 @@
     "react-resizable": "^3.0.5",
     "react-rnd": "^10.4.1",
     "rehype-sanitize": "^6.0.0",
-    "sharp": "^0.32.6",
     "turndown": "^7.1.2",
     "typo-js": "^1.2.3"
   },

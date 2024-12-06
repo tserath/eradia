@@ -2,9 +2,6 @@
 FROM node:20-alpine AS frontend-build
 WORKDIR /frontend
 
-# Install build dependencies for sharp
-RUN apk add --no-cache python3 make g++ pkgconfig pixman-dev cairo-dev pango-dev libjpeg-turbo-dev wget
-
 # Copy package files first
 COPY frontend/package*.json ./
 
@@ -17,18 +14,11 @@ COPY frontend/index.html ./
 COPY frontend/vite.config.js ./
 COPY frontend/tailwind.config.js ./
 COPY frontend/postcss.config.js ./
-COPY frontend/scripts ./scripts
 
-# Create public directory and copy PWA files
+# Create public directory and copy static files
 RUN mkdir -p public
 COPY eradia.svg ./public/eradia.svg
 COPY frontend/public/robots.txt ./public/
-
-# Generate PWA icons
-RUN npm run generate-icons
-
-# Copy manifest after icon generation
-COPY frontend/public/manifest.json ./public/
 
 # Download Hunspell dictionaries
 RUN mkdir -p public/dictionaries/en_US && \
