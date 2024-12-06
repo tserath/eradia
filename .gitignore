@@ -34,6 +34,5 @@ yarn-error.log*
 
 # Project specific
 journal/
-scripts/
 config/
 oldjournal

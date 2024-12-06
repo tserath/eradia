@@ -22,16 +22,18 @@ COPY frontend/scripts ./scripts
 # Create public directory and copy PWA files
 RUN mkdir -p public
 COPY eradia.svg ./public/eradia.svg
-COPY frontend/public/manifest.json ./public/
 COPY frontend/public/robots.txt ./public/
+
+# Generate PWA icons
+RUN npm run generate-icons
+
+# Copy manifest after icon generation
+COPY frontend/public/manifest.json ./public/
 
 # Download Hunspell dictionaries
 RUN mkdir -p public/dictionaries/en_US && \
     wget -O public/dictionaries/en_US/index.aff https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/en/index.aff && \
     wget -O public/dictionaries/en_US/index.dic https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/en/index.dic
-
-# Generate PWA icons
-RUN npm run generate-icons
 
 # Debug: List files and start build
 RUN echo "Frontend files:" && \

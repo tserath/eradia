@@ -9,10 +9,10 @@ services:
       - ../../Data/config:/config
     environment:
       - NODE_ENV=production
-    user: "1000:1000"  # Run as your user ID
+    user: "1000:1000"
     networks:
       local:
-        ipv4_address: 192.168.10.18
+        ipv4_address: 192.168.10.15
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
