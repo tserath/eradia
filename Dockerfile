@@ -17,8 +17,7 @@ COPY frontend/postcss.config.js ./
 
 # Create public directory and copy static files
 RUN mkdir -p public
-COPY eradia.svg ./public/eradia.svg
-COPY frontend/public/robots.txt ./public/
+COPY frontend/public ./public
 
 # Download Hunspell dictionaries
 RUN mkdir -p public/dictionaries/en_US && \
