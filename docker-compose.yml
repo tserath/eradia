@@ -1,0 +1,27 @@
+name: eradia
+services:
+  eradia:
+    #image: ghcr.io/tserath/eradia:latest
+    build: .
+    container_name: eradia
+    volumes:
+      - ../../Data/documents:/data
+      - ../../Data/config:/config
+    environment:
+      - NODE_ENV=production
+    user: "1000:1000"  # Run as your user ID
+    networks:
+      local:
+        ipv4_address: 192.168.10.18
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.eradia.rule=Host(`eradia.shadowdust.win`)"
+      - "traefik.http.routers.eradia.entrypoints=websecure"
+      - "traefik.http.routers.eradia.tls=true"
+      - "traefik.http.routers.eradia.middlewares=authelia-auth@docker"
+    restart: unless-stopped
+
+networks:
+  local:
+    external: true

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 200 200"
+   version="1.1"
+   id="svg14"
+   sodipodi:docname="com.tserath.mudocal.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="5.665"
+     inkscape:cx="100"
+     inkscape:cy="100"
+     inkscape:window-width="3440"
+     inkscape:window-height="1346"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg14" />
+  <!-- Main application window -->
+  <rect
+     x="10"
+     y="10"
+     width="180"
+     height="180"
+     rx="10"
+     ry="10"
+     fill="#4A86E8"
+     stroke="#000"
+     stroke-width="4"
+     id="rect1" />
+  <!-- Exaggerated 3D effect for main window -->
+  <path
+     d="M10 190 Q 100 180 190 190"
+     fill="#2A66C8"
+     stroke="#000"
+     stroke-width="4"
+     id="path1" />
+  <path
+     d="M190 10 Q 180 100 190 190"
+     fill="#2A66C8"
+     stroke="#000"
+     stroke-width="4"
+     id="path2" />
+  <!-- Cartoonish Calendar -->
+  <path
+     d="M30 30 Q 100 20 170 30 L170 175 Q 100 185 30 175 Z"
+     fill="#FFF"
+     stroke="#000"
+     stroke-width="3"
+     id="path3" />
+  <!-- Calendar header -->
+  <path
+     d="M30 30 Q 100 20 170 30 L170 50 Q 100 40 30 50 Z"
+     fill="#FF6B6B"
+     stroke="#000"
+     stroke-width="3"
+     id="path4" />
+  <!-- Calendar grid -->
+  <path
+     d="M30 70 Q 100 65 170 70"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path5" />
+  <path
+     d="M30 95 Q 100 90 170 95"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path6" />
+  <path
+     d="M30 120 Q 100 115 170 120"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path7" />
+  <path
+     d="M30 145 Q 100 140 170 145"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path8" />
+  <path
+     d="M30 170 Q 100 165 170 170"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path9" />
+  <path
+     d="M53 50 Q 51 112.5 53 175"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path10" />
+  <path
+     d="M76 50 Q 74 112.5 76 175"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path11" />
+  <path
+     d="M99 50 Q 97 112.5 99 175"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path12" />
+  <path
+     d="M122 50 Q 120 112.5 122 175"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path13" />
+  <path
+     d="M145 50 Q 143 112.5 145 175"
+     fill="none"
+     stroke="#000"
+     stroke-width="2"
+     id="path14" />
+  <path
+     style="fill:#ffd600;stroke-width:0.176523"
+     d="m 31.509267,39.82785 v -8.378792 l 0.485437,-0.09945 c 0.929524,-0.190431 7.229069,-0.992288 12.577229,-1.60093 13.461901,-1.53202 26.282683,-2.456462 40.688438,-2.933838 6.976347,-0.231182 29.283339,-0.118187 35.304499,0.178834 12.85813,0.634283 23.35053,1.454666 34.24537,2.677588 4.81948,0.540976 12.3025,1.492103 13.19506,1.677154 l 0.48543,0.100644 v 8.378792 8.378793 l -0.5737,-0.09715 C 165.65571,47.726551 155.6982,46.538676 149.4263,45.903647 134.55604,44.398037 120.93802,43.660533 104.76611,43.485008 85.917686,43.280434 67.793945,44.121453 48.808473,46.081684 43.822011,46.596531 33.948028,47.793656 32.082966,48.10949 l -0.573699,0.09715 z"
+     id="path15" />
+</svg>

@@ -1,0 +1,37 @@
+SET UTF-8
+TRY esianrtolcdugmphbyfvkwzESIANRTOLCDUGMPHBYFVKWZ'
+NOSUGGEST !
+
+# Basic plural rules
+SFX S Y 1
+SFX S   0     s          [^sxz]
+SFX S   0     es         [sxz]
+
+# Handle words ending in 'y'
+SFX Y Y 1
+SFX Y   y     ies        [^aeiou]y
+
+# Past tense rules
+SFX D Y 4
+SFX D   0     d          e
+SFX D   0     ed         [^e]
+SFX D   y     ied        [^aeiou]y
+SFX D   0     ed         [^y]
+
+# Present participle rules
+SFX G Y 3
+SFX G   e     ing        e
+SFX G   0     ing        [^e]
+SFX G   0     ing        [^e]
+
+# Comparative rules
+SFX R Y 3
+SFX R   0     er         [^y]
+SFX R   y     ier        [^aeiou]y
+SFX R   0     r          e
+
+# Superlative rules
+SFX T Y 3
+SFX T   0     est        [^y]
+SFX T   y     iest       [^aeiou]y
+SFX T   0     st         e
