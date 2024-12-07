@@ -39,36 +39,44 @@ const CustomSelect = ({ value, onChange, options }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const button = buttonRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const spaceBelow = windowHeight - button.bottom;
-      const spaceAbove = button.top;
-      const dropdownHeight = options.length * 40; // Approximate height of dropdown
+  const calculateDropdownPosition = () => {
+    if (!buttonRef.current) return null;
+    
+    const button = buttonRef.current.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const spaceBelow = windowHeight - button.bottom;
+    const spaceAbove = button.top;
+    const dropdownHeight = options.length * 40; // Approximate height of dropdown
 
-      // If there's not enough space below, and more space above, show dropdown above
-      if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
-        setDropdownStyle({
-          position: 'fixed',
-          bottom: windowHeight - button.top + 8,
-          left: button.left,
-          width: button.width,
-          maxHeight: Math.min(spaceAbove - 8, 400),
-          overflowY: 'auto'
-        });
-      } else {
-        setDropdownStyle({
-          position: 'fixed',
-          top: button.bottom + 8,
-          left: button.left,
-          width: button.width,
-          maxHeight: Math.min(spaceBelow - 8, 400),
-          overflowY: 'auto'
-        });
-      }
+    // If there's not enough space below, and more space above, show dropdown above
+    if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+      return {
+        position: 'fixed',
+        bottom: windowHeight - button.top + 8,
+        left: button.left,
+        width: button.width,
+        maxHeight: Math.min(spaceAbove - 8, 400),
+        overflowY: 'auto'
+      };
+    } else {
+      return {
+        position: 'fixed',
+        top: button.bottom + 8,
+        left: button.left,
+        width: button.width,
+        maxHeight: Math.min(spaceBelow - 8, 400),
+        overflowY: 'auto'
+      };
     }
-  }, [isOpen, options.length]);
+  };
+
+  const handleOpen = () => {
+    const position = calculateDropdownPosition();
+    if (position) {
+      setDropdownStyle(position);
+      setIsOpen(true);
+    }
+  };
 
   const selectedLabel = options.find(opt => opt.value === value)?.label || value;
 
@@ -76,7 +84,7 @@ const CustomSelect = ({ value, onChange, options }) => {
     <div className="relative" ref={dropdownRef}>
       <button
         ref={buttonRef}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => isOpen ? setIsOpen(false) : handleOpen()}
         className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg
                   bg-secondary/20 dark:bg-secondary-dark/20 
                   border border-border dark:border-border-dark

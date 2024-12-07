@@ -38,8 +38,80 @@
     @apply p-2;
   }
 
+  .calendar-base .react-calendar__month-view {
+    @apply w-full;
+  }
+
+  .calendar-base .react-calendar__month-view__days {
+    @apply grid;
+  }
+
+  @media (max-width: 640px) {
+    .calendar-base .react-calendar__month-view__days {
+      @apply grid-cols-7 gap-0;
+    }
+    
+    .calendar-base .react-calendar__month-view button {
+      @apply w-full aspect-square flex items-center justify-center p-1;
+    }
+  }
+
   .calendar-tile-entries {
     @apply bg-blue-100 dark:bg-blue-900 font-medium
            hover:bg-blue-200 dark:hover:bg-blue-800;
+  }
+
+  /* Mobile Calendar Styles */
+  .calendar-mobile-container .mobile-calendar {
+    @apply w-full bg-transparent border-none;
+  }
+
+  .calendar-mobile-container .react-calendar__month-view__days {
+    @apply grid grid-cols-7 gap-0;
+  }
+
+  .calendar-mobile-container .react-calendar__month-view__days__day {
+    @apply aspect-square flex items-center justify-center;
+  }
+
+  .calendar-mobile-container .react-calendar__tile {
+    @apply p-2 text-text dark:text-text-dark rounded-md;
+  }
+
+  .calendar-mobile-container .react-calendar__tile:enabled:hover {
+    @apply bg-secondary dark:bg-secondary-dark;
+  }
+
+  .calendar-mobile-container .react-calendar__tile--active {
+    @apply bg-accent dark:bg-accent-dark text-white;
+  }
+
+  .calendar-mobile-container .has-entries {
+    @apply relative;
+  }
+
+  .calendar-mobile-container .has-entries::after {
+    @apply content-[''] absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-accent dark:bg-accent-dark rounded-full;
+  }
+
+  /* Force equal width for all calendar days */
+  .react-calendar__month-view__days {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+  }
+
+  .react-calendar__month-view__days__day {
+    flex: 0 0 14.285714% !important; /* exactly 1/7 of container width */
+    max-width: 14.285714% !important;
+    aspect-ratio: 1 !important;
+  }
+
+  .react-calendar__month-view__days button {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 }

@@ -9,6 +9,8 @@ import { useTheme } from '../theme/ThemeContext';
 import MobileEditor from './MobileEditor';
 import FileList from '../sidebar/FileList';
 import { generateUUID } from '../../api/api';
+import MonthPicker from '../calendar/MonthPicker';
+import YearPicker from '../calendar/YearPicker';
 
 const MobileLayout = ({
   availableEntries,
@@ -25,6 +27,9 @@ const MobileLayout = ({
   const { theme, setTheme } = useTheme();
   const [currentEntry, setCurrentEntry] = useState(null);
   const [month, setMonth] = useState(new Date());
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [showYearPicker, setShowYearPicker] = useState(false);
+  const [yearPickerBaseYear, setYearPickerBaseYear] = useState(2020);
 
   // Increase text sizes for better mobile readability
   const baseTextClass = "text-xl"; // Base text size for general content
@@ -156,9 +161,60 @@ const MobileLayout = ({
                         >
                           &lt;
                         </button>
-                        <span className="text-lg font-medium">
-                          {format(displayMonth, 'MMMM yyyy')}
-                        </span>
+                        <div className="flex flex-col items-center">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowMonthPicker(!showMonthPicker);
+                              if (!showMonthPicker) {
+                                setShowYearPicker(false);
+                              }
+                            }}
+                            className="text-lg font-medium leading-none mb-1 hover:bg-secondary dark:hover:bg-secondary-dark px-3 py-1 rounded transition-colors"
+                          >
+                            {format(displayMonth, 'MMMM')}
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowYearPicker(!showYearPicker);
+                              if (!showYearPicker) {
+                                setShowMonthPicker(false);
+                              }
+                            }}
+                            className="text-sm text-text-muted dark:text-text-muted-dark leading-none hover:bg-secondary dark:hover:bg-secondary-dark px-3 py-1 rounded transition-colors"
+                          >
+                            {format(displayMonth, 'yyyy')}
+                          </button>
+                          {showMonthPicker && (
+                            <MonthPicker
+                              date={month}
+                              isOpen={showMonthPicker}
+                              onClose={() => setShowMonthPicker(false)}
+                              onSelect={(monthIndex) => {
+                                const newDate = new Date(month);
+                                newDate.setMonth(monthIndex);
+                                setMonth(newDate);
+                                setShowMonthPicker(false);
+                              }}
+                            />
+                          )}
+                          {showYearPicker && (
+                            <YearPicker
+                              date={month}
+                              isOpen={showYearPicker}
+                              onClose={() => setShowYearPicker(false)}
+                              onSelect={(year) => {
+                                const newDate = new Date(month);
+                                newDate.setFullYear(year);
+                                setMonth(newDate);
+                                setShowYearPicker(false);
+                              }}
+                              baseYear={yearPickerBaseYear}
+                              onChangeRange={(change) => setYearPickerBaseYear(yearPickerBaseYear + change * 12)}
+                            />
+                          )}
+                        </div>
                         <button 
                           onClick={(e) => {
                             e.preventDefault();

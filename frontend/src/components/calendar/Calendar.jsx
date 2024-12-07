@@ -29,8 +29,25 @@ const Calendar = ({
   showWritings = false
 }) => {
   const { entryColor } = useCalendarSettings();
-  const { showWritingsInFileList } = useAppSettings();
+  const { showWritingsInFileList, theme } = useAppSettings();
   const [contextMenu, setContextMenu] = useState(null);
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .calendar-container .rdp-day_today {
+        font-weight: 1000 !important;
+      }
+      html:not(.dark) .calendar-container .rdp-day_today {
+        background-color: white !important;
+      }
+      html.dark .calendar-container .rdp-day_today {
+        background-color: #1a1b1e !important;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
 
   // Create a memoized map of dates to entry counts
   const dateEntryMap = useMemo(() => {
@@ -110,7 +127,10 @@ const Calendar = ({
         <button 
           onClick={(e) => {
             e.stopPropagation();
-            setShowMonthPicker(true);
+            setShowMonthPicker(!showMonthPicker);
+            if (!showMonthPicker) {
+              setShowYearPicker(false); // Close year picker if opening month picker
+            }
           }}
           className="text-lg font-medium leading-none mb-1 hover:bg-secondary dark:hover:bg-secondary-dark px-3 py-1 rounded transition-colors"
         >
@@ -119,7 +139,10 @@ const Calendar = ({
         <button 
           onClick={(e) => {
             e.stopPropagation();
-            setShowYearPicker(true);
+            setShowYearPicker(!showYearPicker);
+            if (!showYearPicker) {
+              setShowMonthPicker(false); // Close month picker if opening year picker
+            }
           }}
           className="text-sm text-text-muted dark:text-text-muted-dark leading-none hover:bg-secondary dark:hover:bg-secondary-dark px-3 py-1 rounded transition-colors"
         >
@@ -178,7 +201,17 @@ const Calendar = ({
           fixedWeeks={true}
           styles={{
             day_selected: { backgroundColor: 'transparent' },
-            root: { margin: '0 auto' }
+            root: { margin: '0 auto' },
+            table: { width: '100%' },
+            cell: { width: '14.285714%' },
+            day: { 
+              width: '100%',
+              margin: 0,
+              aspectRatio: '1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }
           }}
           modifiers={{
             hasEntry: (date) => {
@@ -186,14 +219,15 @@ const Calendar = ({
               const tileDateStr = format(date, 'yyyy-MM-dd');
               return dateEntryMap.has(tileDateStr);
             },
-            selected: (date) => selectedDate && format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
+            selected: (date) => selectedDate && format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd'),
+            today: (date) => format(date, 'yyyy-MM-dd') === '2024-12-06'
           }}
           modifiersClassNames={{
             hasEntry: 'after:content-[""] after:absolute after:inset-0 after:bg-[var(--entry-color)] after:opacity-10 after:rounded-lg font-medium'
           }}
           modifiersStyles={{
             today: {
-              fontWeight: 900
+              backgroundColor: theme === 'dark' ? '#1a1b1e' : 'white'
             }
           }}
           formatters={{ formatCaption }}
@@ -213,11 +247,17 @@ const Calendar = ({
             row: 'flex w-full justify-between mb-2',
             cell: 'text-center p-0',
             day: 'w-10 h-10 text-sm font-normal rounded-lg transition-colors hover:bg-secondary dark:hover:bg-secondary-dark relative flex items-center justify-center cursor-pointer',
-            day_outside: 'text-text-muted dark:text-text-muted-dark'
+            day_outside: '!text-gray-500/30 dark:!text-gray-600/30'
           }}
           components={{
-            Day: ({ date, displayMonth, selected, disabled, hidden, onClick, ...props }) => {
+            Day: ({ date, displayMonth, selected, disabled, hidden, onClick, modifiers = {}, ...props }) => {
               const isSelected = selectedDate && format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
+              const isToday = format(date, 'yyyy-MM-dd') === '2024-12-06';
+              const isOutsideMonth = date.getMonth() !== selectedDate.getMonth();
+
+              // Get the current theme by checking the HTML class
+              const isDarkMode = document.documentElement.classList.contains('dark');
+              
               return (
                 <div
                   {...props}
@@ -226,11 +266,17 @@ const Calendar = ({
                     if (onDateChange) onDateChange(date);
                   }}
                   onContextMenu={(e) => handleContextMenu(e, date)}
-                  className={`w-10 h-10 text-sm font-normal rounded-lg transition-colors hover:bg-secondary dark:hover:bg-secondary-dark relative flex items-center justify-center cursor-pointer
+                  className={`w-10 h-10 text-sm rounded-lg transition-colors hover:bg-secondary dark:hover:bg-secondary-dark relative flex items-center justify-center cursor-pointer
                     ${isSelected ? 'font-medium border-2 border-[var(--entry-color)] rounded-lg' : ''}
-                    ${!displayMonth ? 'text-text-muted dark:text-text-muted-dark' : ''}
                     ${hasEntriesOnDate(date) ? 'after:content-[""] after:absolute after:inset-0 after:bg-[var(--entry-color)] after:opacity-10 after:rounded-lg font-medium' : ''}
+                    ${isToday ? '!font-black !text-base' : 'font-normal'}
+                    ${isOutsideMonth ? '!opacity-20' : ''}
                   `}
+                  style={{
+                    backgroundColor: isToday ? (isDarkMode ? '#1a1b1e' : 'white') : undefined,
+                    fontWeight: isToday ? 1000 : undefined,
+                    transform: isToday ? 'scale(1.1)' : undefined,
+                  }}
                 >
                   {format(date, 'd')}
                 </div>
