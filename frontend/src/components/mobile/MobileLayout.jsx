@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { format, parseISO } from 'date-fns';
@@ -24,11 +24,29 @@ const MobileLayout = ({
   const { uiSize } = useAppearance();
   const { theme, setTheme } = useTheme();
   const [currentEntry, setCurrentEntry] = useState(null);
+  const [month, setMonth] = useState(new Date());
 
   // Increase text sizes for better mobile readability
   const baseTextClass = "text-xl"; // Base text size for general content
   const headerTextClass = "text-3xl font-medium"; // Larger headers
   const buttonTextClass = "text-xl"; // Larger button text
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .rdp-day_today:not(.rdp-day_selected) {
+        font-weight: 1000 !important;
+      }
+      html:not(.dark) .rdp-day_today:not(.rdp-day_selected) {
+        background-color: white !important;
+      }
+      html.dark .rdp-day_today:not(.rdp-day_selected) {
+        background-color: #1a1b1e !important;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
 
   const formatDate = (date) => {
     if (!date) return '';
@@ -103,12 +121,16 @@ const MobileLayout = ({
                   mode="single"
                   selected={selectedDate}
                   onSelect={onDateChange}
+                  month={month}
+                  onMonthChange={setMonth}
+                  showOutsideDays={true}
                   className={`${baseTextClass} w-full bg-primary dark:bg-primary-dark text-content dark:text-content-dark rounded-lg shadow-lg`}
                   modifiers={{
                     hasEntry: (date) => {
                       if (!date) return false;
                       try {
-                        return getEntriesForDate(date).length > 0;
+                        const entries = getEntriesForDate(date);
+                        return entries && entries.length > 0;
                       } catch (e) {
                         console.error('Error checking entries for date:', e);
                         return false;
@@ -117,27 +139,54 @@ const MobileLayout = ({
                   }}
                   modifiersStyles={{
                     hasEntry: { 
-                      backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                      fontWeight: '500'
+                      backgroundColor: 'rgb(59, 130, 246, 0.15)'
                     }
+                  }}
+                  components={{
+                    Caption: ({ displayMonth }) => (
+                      <div className="flex items-center justify-between w-full px-4 py-2">
+                        <button 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const newDate = new Date(month);
+                            newDate.setMonth(month.getMonth() - 1);
+                            setMonth(newDate);
+                          }}
+                          className="hover:bg-secondary dark:hover:bg-secondary-dark p-2 rounded-lg"
+                        >
+                          &lt;
+                        </button>
+                        <span className="text-lg font-medium">
+                          {format(displayMonth, 'MMMM yyyy')}
+                        </span>
+                        <button 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const newDate = new Date(month);
+                            newDate.setMonth(month.getMonth() + 1);
+                            setMonth(newDate);
+                          }}
+                          className="hover:bg-secondary dark:hover:bg-secondary-dark p-2 rounded-lg"
+                        >
+                          &gt;
+                        </button>
+                      </div>
+                    )
                   }}
                   classNames={{
                     root: 'w-full max-w-[100vw] overflow-x-hidden',
                     months: 'w-full flex justify-center',
                     month: 'w-full',
-                    caption: 'flex justify-between items-center mb-4',
-                    caption_label: 'text-lg font-medium',
-                    nav: 'flex space-x-2',
-                    nav_button: 'p-2 rounded-lg hover:bg-secondary dark:hover:bg-secondary-dark',
-                    table: 'w-full border-collapse',
-                    head_row: 'flex w-full justify-between mb-2',
-                    head_cell: 'text-sm font-medium text-gray-500 dark:text-gray-400 w-10 text-center',
-                    row: 'flex w-full justify-between mb-2',
-                    cell: 'text-center p-0',
-                    button: 'w-10 h-10 font-normal hover:bg-secondary dark:hover:bg-secondary-dark rounded-lg',
-                    day_selected: 'bg-accent dark:bg-accent-dark text-white font-normal',
-                    day_today: 'text-blue-500 dark:text-blue-400 font-bold',
-                    day: 'text-lg'
+                    caption: 'flex justify-center items-center mb-4 relative',
+                    nav: 'hidden',
+                    table: 'w-full table-fixed',
+                    head_row: 'grid grid-cols-7 w-full mb-2',
+                    head_cell: 'text-sm font-medium text-gray-500 dark:text-gray-400 text-center',
+                    row: 'grid grid-cols-7 w-full mb-2',
+                    cell: 'aspect-square p-0',
+                    day: 'w-full h-full flex items-center justify-center text-lg',
+                    button: 'w-full h-full flex items-center justify-center hover:bg-secondary dark:hover:bg-secondary-dark rounded-lg',
+                    day_selected: 'bg-accent dark:bg-accent-dark text-white'
                   }}
                 />
                 <div className="flex-1 overflow-y-auto">
