@@ -49,8 +49,11 @@ const ContextMenu = ({ x, y, onClose, children }) => {
   return createPortal(
     <div
       ref={menuRef}
-      className="fixed z-50 min-w-[160px] bg-white dark:bg-gray-800 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700 overflow-hidden animate-fade-in"
-      style={{ left: x, top: y }}
+      className="fixed z-50 min-w-[200px] py-1 bg-white dark:bg-accent-dark rounded-lg shadow-lg border border-border dark:border-border-dark"
+      style={{
+        left: `${x}px`,
+        top: `${y}px`,
+      }}
     >
       {children}
     </div>,

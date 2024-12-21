@@ -3,9 +3,9 @@ import { ChevronRight, ChevronDown, File, Folder } from 'lucide-react';
 import { FolderPlus, Edit, MoveVertical, Trash } from 'lucide-react';
 import { useApi } from '../../api/api';
 import ContextMenu, { ContextMenuItem } from './ContextMenu';
-import MoveDialog from '../dialog/MoveDialog';
-import DeleteDialog from '../dialog/DeleteDialog';
-import RenameDialog from '../dialog/RenameDialog';
+import MoveDialog from '../shared/MoveDialog';
+import DeleteDialog from '../shared/DeleteDialog';
+import RenameDialog from '../shared/WritingsRenameDialog';
 
 const WritingsTree = React.forwardRef(({ onOpenEntry, onRenameEntry, onDeleteEntry }, ref) => {
   const [tree, setTree] = useState(null);

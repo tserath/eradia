@@ -31,35 +31,17 @@ export default defineConfig({
         categories: ["productivity", "lifestyle"],
         icons: [
           {
-            src: "pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "any"
-          },
-          {
-            src: "pwa-512x512.png",
+            src: "eradia.svg",
             sizes: "512x512",
-            type: "image/png",
-            purpose: "any"
-          },
-          {
-            src: "pwa-192x192-maskable.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "maskable"
-          },
-          {
-            src: "pwa-512x512-maskable.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable"
+            type: "image/svg+xml",
+            purpose: "any maskable"
           }
         ],
         shortcuts: [
           {
             name: "Open Eradia",
             url: "/",
-            icons: [{ src: "/icons/icon-96x96.png", sizes: "96x96", type: "image/png" }]
+            icons: [{ src: "/eradia.svg", sizes: "512x512", type: "image/svg+xml" }]
           }
         ]
       },
@@ -126,7 +108,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
+    port: 5173,
     host: true,
     cors: true,
     headers: {

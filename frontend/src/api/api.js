@@ -209,7 +209,7 @@ const useApi = () => {
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
         try {
-          const response = await fetch(`${API_URL}/writings`, {
+          const response = await fetch(`${API_URL}/writings/`, {
             signal: controller.signal,
             ...defaultFetchOptions
           });
@@ -258,10 +258,9 @@ const useApi = () => {
   const loadWritingContent = async (path) => {
     try {
       return await withRetry(async () => {
-        // Ensure path has .md extension
-        const filePath = path.endsWith('.md') ? path : path + '.md';
-        const response = await fetch(`${API_URL}/writings/content?path=${encodeURIComponent(filePath)}`, defaultFetchOptions);
+        const response = await fetch(`${API_URL}/writings/content?path=${encodeURIComponent(path)}`, defaultFetchOptions);
         const result = await handleResponse(response);
+        if (!result) return null;
         
         // Store content in localStorage
         if (typeof window !== 'undefined' && result.content) {
@@ -389,22 +388,39 @@ const useApi = () => {
 
       return await withRetry(async () => {
         console.log('Attempting to delete:', path);
-        const response = await fetch(`${API_URL}/writings/content?path=${encodeURIComponent(path)}`, {
+        // Remove leading slashes and encode
+        const encodedPath = encodeURIComponent(path.replace(/^\/+/, ''));
+        console.log('Encoded path:', encodedPath);
+        const response = await fetch(`${API_URL}/writings/${encodedPath}/`, {
           method: 'DELETE',
           ...defaultFetchOptions,
+          headers: {
+            ...defaultFetchOptions.headers,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
         });
 
+        let data;
+        const contentType = response.headers.get("content-type");
+        try {
+          if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+          } else {
+            const text = await response.text();
+            console.error('Received non-JSON response:', text);
+            throw new Error(`Server returned non-JSON response: ${text}`);
+          }
+        } catch (parseError) {
+          console.error('Error parsing response:', parseError);
+          throw new Error(`Failed to parse server response: ${parseError.message}`);
+        }
+
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(data.error || `Failed to delete writing: ${response.status} ${response.statusText}`);
         }
 
-        // Clear the writings cache on successful deletion
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('eradia_writings_backup');
-          localStorage.removeItem('eradia_writings_timestamp');
-        }
-
-        return await handleResponse(response);
+        return data;
       });
     } catch (e) {
       console.error('Delete Writing Error:', e);
@@ -502,7 +518,7 @@ const useApi = () => {
   // Create a new writing
   const createNewWriting = async (path = '') => {
     try {
-      const response = await fetch(`${API_URL}/writings`, {
+      const response = await fetch(`${API_URL}/writings/`, {
         method: 'POST',
         ...defaultFetchOptions,
         body: JSON.stringify({ path }),

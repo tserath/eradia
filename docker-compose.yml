@@ -4,22 +4,48 @@ services:
     #image: ghcr.io/tserath/eradia:latest
     build: .
     container_name: eradia
+    #ports:
+    #  - "3000:3000"  # Backend API
+    #  - "3001:80"    # Frontend (Nginx)
     volumes:
-      - ../../Data/documents:/data
-      - ../../Data/config:/config
+      - ./data:/data
+      - ./config:/config
     environment:
       - NODE_ENV=production
     user: "1000:1000"
     networks:
       local:
-        ipv4_address: 192.168.10.15
+        ipv4_address: 172.16.0.10
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
-      - "traefik.http.routers.eradia.rule=Host(`eradia.shadowdust.win`)"
-      - "traefik.http.routers.eradia.entrypoints=websecure"
-      - "traefik.http.routers.eradia.tls=true"
-      - "traefik.http.routers.eradia.middlewares=authelia-auth@docker"
+      # CORS middleware
+      - "traefik.http.middlewares.eradia-cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.eradia-cors.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.middlewares.eradia-cors.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.eradia-cors.headers.accesscontrolallowheaders=Content-Type,Authorization,X-Requested-With"
+      - "traefik.http.middlewares.eradia-cors.headers.accesscontrolexposeheaders=Content-Range,X-Content-Range,Authorization"
+      - "traefik.http.middlewares.eradia-cors.headers.addvaryheader=true"
+      # No-cache middleware
+      - "traefik.http.middlewares.no-cache.headers.customResponseHeaders.Cache-Control=no-store,no-cache,must-revalidate,private"
+      - "traefik.http.middlewares.no-cache.headers.customResponseHeaders.Pragma=no-cache"
+      - "traefik.http.middlewares.no-cache.headers.customResponseHeaders.Expires=0"
+      # Frontend service
+      - "traefik.http.services.eradia-web.loadbalancer.server.port=80"
+      # Frontend router
+      - "traefik.http.routers.eradia-web.service=eradia-web"
+      - "traefik.http.routers.eradia-web.rule=Host(`eradia.example.com`)"
+      - "traefik.http.routers.eradia-web.entrypoints=websecure"
+      - "traefik.http.routers.eradia-web.tls=true"
+      - "traefik.http.routers.eradia-web.middlewares=eradia-cors@docker,no-cache@docker,authelia-auth@docker"
+      # API service
+      - "traefik.http.services.eradia-api.loadbalancer.server.port=3000"
+      # API router
+      - "traefik.http.routers.eradia-api.service=eradia-api"
+      - "traefik.http.routers.eradia-api.rule=Host(`eradia.example.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.eradia-api.entrypoints=websecure"
+      - "traefik.http.routers.eradia-api.tls=true"
+      - "traefik.http.routers.eradia-api.middlewares=eradia-cors@docker,no-cache@docker,authelia-auth@docker"
     restart: unless-stopped
 
 networks:

@@ -91,7 +91,7 @@ RUN echo 'user nginx nginx;' > /etc/nginx/nginx.conf && \
     echo '}' >> /etc/nginx/nginx.conf
 
 # Create startup script
-RUN printf '#!/bin/sh\nnginx -g "daemon off;" &\ncd /app && npm start\n' > /app/start.sh && \
+RUN printf '#!/bin/sh\nnginx -g "daemon off;" &\ncd /app && exec node src/index.js 2>&1\n' > /app/start.sh && \
     chmod +x /app/start.sh && \
     chown 1000:1000 /app/start.sh
 

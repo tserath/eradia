@@ -1,0 +1,17 @@
+{
+  "name": "Eradia",
+  "short_name": "Eradia",
+  "description": "Your personal writing and journaling companion",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/eradia.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

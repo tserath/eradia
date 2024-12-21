@@ -220,10 +220,11 @@ const Calendar = ({
               return dateEntryMap.has(tileDateStr);
             },
             selected: (date) => selectedDate && format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd'),
-            today: (date) => format(date, 'yyyy-MM-dd') === '2024-12-06'
+            today: (date) => format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
           }}
           modifiersClassNames={{
-            hasEntry: 'after:content-[""] after:absolute after:inset-0 after:bg-[var(--entry-color)] after:opacity-10 after:rounded-lg font-medium'
+            hasEntry: 'after:content-[""] after:absolute after:inset-0 after:bg-[var(--entry-color)] after:opacity-10 after:rounded-lg font-medium',
+            selected: 'after:content-[""] after:absolute after:inset-0 after:bg-[var(--entry-color)] after:opacity-20 after:rounded-lg font-medium'
           }}
           modifiersStyles={{
             today: {
@@ -252,9 +253,8 @@ const Calendar = ({
           components={{
             Day: ({ date, displayMonth, selected, disabled, hidden, onClick, modifiers = {}, ...props }) => {
               const isSelected = selectedDate && format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
-              const isToday = format(date, 'yyyy-MM-dd') === '2024-12-06';
               const isOutsideMonth = date.getMonth() !== selectedDate.getMonth();
-
+              const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               // Get the current theme by checking the HTML class
               const isDarkMode = document.documentElement.classList.contains('dark');
               

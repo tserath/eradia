@@ -4,7 +4,7 @@ import { File, Edit, Trash } from 'lucide-react';
 import ContextMenu, { ContextMenuItem } from './ContextMenu';
 import { useAppSettings } from '../settings/AppSettingsContext';
 import ConfirmationDialog from '../shared/ConfirmationDialog';
-import RenameDialog from '../shared/RenameDialog';
+import RenameDialog from '../shared/FilesRenameDialog';
 
 const FileList = ({ date, entries = [], onOpenEntry, onRenameEntry, onDeleteEntry, isMobile = false }) => {
   const [selectedEntry, setSelectedEntry] = useState(null);

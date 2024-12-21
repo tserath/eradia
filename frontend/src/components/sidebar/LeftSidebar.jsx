@@ -167,14 +167,14 @@ const LeftSidebar = ({ entries, onCreateEntry, onSelectEntry, selectedEntry, onO
               >
                 <div className="flex items-center gap-2">
                   {viewOptions.find(opt => opt.id === selectedView)?.icon && 
-                    React.createElement(viewOptions.find(opt => opt.id === selectedView).icon, { className: "w-4 h-4" })}
+                    React.createElement(viewOptions.find(opt => opt.id === selectedView).icon, { size: 16 })}
                   <span>{viewOptions.find(opt => opt.id === selectedView)?.label}</span>
                 </div>
                 <ChevronDown className="w-4 h-4" />
               </button>
               
               {dropdownOpen && (
-                <div className="absolute top-full left-0 w-full mt-1 py-1 bg-primary dark:bg-primary-dark border border-border dark:border-border-dark rounded-lg shadow-lg z-50">
+                <div className="absolute top-full left-0 w-full mt-1 py-1 bg-white dark:bg-gray-800 border border-border dark:border-border-dark rounded-lg shadow-lg z-50">
                   {viewOptions.map(option => (
                     <button
                       key={option.id}
@@ -185,7 +185,7 @@ const LeftSidebar = ({ entries, onCreateEntry, onSelectEntry, selectedEntry, onO
                           : 'hover:bg-secondary/20 dark:hover:bg-secondary-dark/20'
                       }`}
                     >
-                      {React.createElement(option.icon, { className: "w-4 h-4" })}
+                      {React.createElement(option.icon, { size: 16 })}
                       <span>{option.label}</span>
                     </button>
                   ))}

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronRight, ChevronDown, FileText, Edit2, Trash } from 'lucide-react';
 import ConfirmationDialog from '../shared/ConfirmationDialog';
-import RenameDialog from '../shared/RenameDialog';
+import RenameDialog from '../shared/FilesRenameDialog';
 import ContextMenu, { ContextMenuItem } from './ContextMenu';
 import { format, parseISO } from 'date-fns';
 
@@ -48,14 +48,13 @@ const FileTree = ({ entries, onOpenEntry, onRenameEntry, onDeleteEntry }) => {
     }
   }, [entries]);
 
-  const handleContextMenu = useCallback((e, entry) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const rect = e.currentTarget.getBoundingClientRect();
+  const handleContextMenu = useCallback((event, entry) => {
+    event.preventDefault();
+    event.stopPropagation();
     setSelectedEntry(entry);
     setContextMenu({
-      x: e.clientX,
-      y: e.clientY
+      x: event.clientX,
+      y: event.clientY
     });
   }, []);
 
@@ -80,18 +79,21 @@ const FileTree = ({ entries, onOpenEntry, onRenameEntry, onDeleteEntry }) => {
     }
   }, [showDeleteConfirm, onDeleteEntry]);
 
-  const handleNodeClick = useCallback((entry) => {
+  const handleNodeClick = useCallback((event, entry) => {
+    event.preventDefault();
+    event.stopPropagation();
     if (entry) {
       onOpenEntry(entry);
     }
   }, [onOpenEntry]);
 
-  const TreeNode = ({ label, children, nodeKey, level = 0 }) => (
+  const TreeNode = ({ label, children, nodeKey, level = 0, entry }) => (
     <div className="relative">
       <div
         className={`flex items-center py-1 px-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700
                    ${level > 0 ? 'pl-' + (level * 4) : ''}`}
-        onClick={() => setExpanded(prev => ({ ...prev, [nodeKey]: !prev[nodeKey] }))}
+        onClick={(event) => setExpanded(prev => ({ ...prev, [nodeKey]: !prev[nodeKey] }))}
+        onContextMenu={(event) => entry && handleContextMenu(event, entry)}
       >
         {children && (
           expanded[nodeKey] ? 
@@ -109,8 +111,8 @@ const FileTree = ({ entries, onOpenEntry, onRenameEntry, onDeleteEntry }) => {
       className={`flex items-center py-1 px-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700
                  ${selectedEntry?.id === entry.id ? 'bg-gray-200 dark:bg-gray-600' : ''}
                  pl-${level * 4}`}
-      onClick={() => onOpenEntry(entry)}
-      onContextMenu={(e) => handleContextMenu(e, entry)}
+      onClick={(event) => handleNodeClick(event, entry)}
+      onContextMenu={(event) => handleContextMenu(event, entry)}
     >
       <FileText className="w-4 h-4 mr-2 flex-none text-text-muted dark:text-text-muted-dark" />
       <span className="flex-1 truncate">{entry.title || 'Untitled'}</span>
@@ -122,11 +124,11 @@ const FileTree = ({ entries, onOpenEntry, onRenameEntry, onDeleteEntry }) => {
 
   const renderTree = () => {
     return Object.entries(structure).map(([year, months]) => (
-      <TreeNode key={year} label={year} nodeKey={year}>
+      <TreeNode key={year} label={year} nodeKey={year} entry={null}>
         {expanded[year] && Object.entries(months).map(([month, days]) => (
-          <TreeNode key={`${year}-${month}`} label={month} nodeKey={`${year}-${month}`} level={1}>
+          <TreeNode key={`${year}-${month}`} label={month} nodeKey={`${year}-${month}`} level={1} entry={null}>
             {expanded[`${year}-${month}`] && Object.entries(days).map(([day, entries]) => (
-              <TreeNode key={`${year}-${month}-${day}`} label={day} nodeKey={`${year}-${month}-${day}`} level={2}>
+              <TreeNode key={`${year}-${month}-${day}`} label={day} nodeKey={`${year}-${month}-${day}`} level={2} entry={null}>
                 {expanded[`${year}-${month}-${day}`] && entries.map(entry => (
                   <FileEntry key={entry.id} entry={entry} />
                 ))}
@@ -139,7 +141,20 @@ const FileTree = ({ entries, onOpenEntry, onRenameEntry, onDeleteEntry }) => {
   };
 
   return (
-    <div className="p-4">
+    <div 
+      className="p-4"
+      onContextMenu={(event) => {
+        if (event.target === event.currentTarget) {
+          event.preventDefault();
+          event.stopPropagation();
+          setSelectedEntry(null);
+          setContextMenu({
+            x: event.clientX,
+            y: event.clientY
+          });
+        }
+      }}
+    >
       {Object.keys(structure).length > 0 ? (
         renderTree()
       ) : (

@@ -46,7 +46,6 @@ const AppContent = () => {
 
     // Clean the path and ensure it doesn't have .md extension for ID
     const cleanPath = (entry.id || entry.path)
-      .replace(/\.md$/, '')
       .replace(/^root\//, '')  // Remove root/ prefix if present
       .replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
     
@@ -55,7 +54,6 @@ const AppContent = () => {
     // First check for an existing window with this path
     const existingEntry = Array.from(openEntries.values()).find(e => {
       const entryPath = (e.path || e.id || '')
-        .replace(/\.md$/, '')
         .replace(/^root\//, '')
         .replace(/^\/+|\/+$/g, '');
       return entryPath === cleanPath;
@@ -78,7 +76,7 @@ const AppContent = () => {
       return;
     }
 
-    // For writings, ensure we have the .md extension in the path
+    // For writings, ensure we have the correct path format
     const filePath = cleanPath + '.md';
 
     // Create window state
@@ -97,7 +95,42 @@ const AppContent = () => {
             path: filePath,
             title: entry.title || filePath.split('/').pop().replace(/\.md$/, ''),
             content: response.content || '',
-            windowState
+            windowState,
+            navigationLinks: [
+              {
+                path: '/writings',
+                label: 'Writings',
+                icon: 'file-richtext',
+                exact: false,
+                render: () => <Suspense fallback={<div>Loading...</div>}>
+                  <MobileWritingsTab />
+                </Suspense>,
+                mobile: true,
+                mobileOrder: 2
+              },
+              {
+                path: '/search',
+                label: 'Search',
+                icon: 'search',
+                exact: true,
+                render: () => <Suspense fallback={<div>Loading...</div>}>
+                  <MobileSearch />
+                </Suspense>,
+                mobile: true,
+                mobileOrder: 3
+              },
+              {
+                path: '/settings',
+                label: 'Settings',
+                icon: 'settings',
+                exact: true,
+                render: () => <Suspense fallback={<div>Loading...</div>}>
+                  <MobileSettings />
+                </Suspense>,
+                mobile: true,
+                mobileOrder: 4
+              }
+            ]
           };
 
           setOpenEntries(prev => {
@@ -105,8 +138,8 @@ const AppContent = () => {
             if (Array.from(prev.values()).some(e => {
               const entryPath = (e.path || e.id || '')
                 .replace(/\.md$/, '')
-                .replace(/^root\//, '')
-                .replace(/^\/+|\/+$/g, '');
+                .replace(/^root\//, '')  // Remove root/ prefix if present
+                .replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
               return entryPath === cleanPath;
             })) {
               return prev;
@@ -131,7 +164,19 @@ const AppContent = () => {
       windowState
     };
 
-    setOpenEntries(prev => new Map(prev).set(cleanPath, newEntry));
+    setOpenEntries(prev => {
+      // Double check we haven't created a window while loading
+      if (Array.from(prev.values()).some(e => {
+        const entryPath = (e.path || e.id || '')
+          .replace(/\.md$/, '')
+          .replace(/^root\//, '')  // Remove root/ prefix if present
+          .replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
+        return entryPath === cleanPath;
+      })) {
+        return prev;
+      }
+      return new Map(prev).set(cleanPath, newEntry);
+    });
   }, [openEntries, api]);
 
   // Create debounced save functions
@@ -306,7 +351,10 @@ const AppContent = () => {
       
       // First try to find by exact path match
       for (const [id, entry] of prev.entries()) {
-        const entryPath = entry.path?.replace(/\.md$/, '');
+        const entryPath = (entry.path || entry.id || '')
+          .replace(/\.md$/, '')
+          .replace(/^root\//, '')
+          .replace(/^\/+|\/+$/g, '');
         if (entry.type === 'writing' && entryPath === cleanOldPath) {
           found = true;
           const newEntry = {

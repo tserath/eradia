@@ -117,7 +117,7 @@ async function readFileAndMetadata(filePath, type) {
       type
     };
   } catch (error) {
-    console.warn(`Error reading file ${filePath}:`, error);
+    console.error(`Error reading file ${filePath}:`, error);
     return null;
   }
 }
@@ -954,6 +954,68 @@ app.delete('/api/writings/content', async (req, res) => {
   }
 });
 
+// Delete endpoint that handles path parameters
+app.delete('/api/writings/*', async (req, res) => {
+  try {
+    const itemPath = decodeURIComponent(req.params[0]);
+    console.log('Delete request received for path:', itemPath);
+    
+    if (!itemPath) {
+      return res.status(400).json({ error: 'Path is required' });
+    }
+
+    const fullPath = path.join(WRITINGS_DIR, itemPath);
+    console.log('Full path:', fullPath);
+
+    // Ensure the path is within the writings directory
+    const normalizedPath = path.normalize(fullPath);
+    if (!normalizedPath.startsWith(WRITINGS_DIR)) {
+      console.log('Invalid path detected:', { normalizedPath, WRITINGS_DIR });
+      return res.status(403).json({ error: 'Invalid path' });
+    }
+
+    try {
+      const stats = await fs.stat(normalizedPath);
+      console.log('File/Directory stats:', {
+        isDirectory: stats.isDirectory(),
+        size: stats.size,
+        path: normalizedPath
+      });
+
+      if (stats.isDirectory()) {
+        console.log('Deleting directory:', normalizedPath);
+        await fs.rm(normalizedPath, { recursive: true, force: true });
+      } else {
+        console.log('Deleting file:', normalizedPath);
+        await fs.unlink(normalizedPath);
+      }
+
+      console.log('Delete successful');
+      res.json({ success: true });
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        // Try with .md extension if the file wasn't found
+        const mdPath = normalizedPath + '.md';
+        console.log('Trying with .md extension:', mdPath);
+        try {
+          await fs.unlink(mdPath);
+          console.log('Delete successful with .md extension');
+          res.json({ success: true });
+        } catch (mdError) {
+          console.error('Error deleting with .md extension:', mdError);
+          res.status(404).json({ error: `File or directory not found: ${itemPath}` });
+        }
+      } else {
+        console.error('Error during deletion:', error);
+        res.status(500).json({ error: `Failed to delete: ${error.message}` });
+      }
+    }
+  } catch (error) {
+    console.error('Error processing delete request:', error);
+    res.status(500).json({ error: `Failed to process delete request: ${error.message}` });
+  }
+});
+
 // Custom dictionary endpoints
 app.get('/api/dictionary/custom', async (req, res) => {
   try {
@@ -1006,6 +1068,36 @@ app.post('/api/dictionary/custom', async (req, res) => {
   }
 });
 
-app.listen(port, '0.0.0.0', () => {
- console.log(`Server running at http://0.0.0.0:${port}`);
+// Configure logging
+process.stdout.write = (function(write) {
+  return function(string, encoding, fd) {
+    if (string !== '\n') {
+      write.call(process.stdout, new Date().toISOString() + ' ');
+    }
+    write.call(process.stdout, string, encoding, fd);
+  };
+})(process.stdout.write);
+
+process.stderr.write = (function(write) {
+  return function(string, encoding, fd) {
+    if (string !== '\n') {
+      write.call(process.stderr, new Date().toISOString() + ' [ERROR] ');
+    }
+    write.call(process.stderr, string, encoding, fd);
+  };
+})(process.stderr.write);
+
+// Start server
+app.listen(3000, '0.0.0.0', () => {
+  console.log(`Server running at http://0.0.0.0:3000`);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });

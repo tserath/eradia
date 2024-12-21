@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const RenameDialog = ({ isOpen, title, onConfirm, onClose, onCancel }) => {
+const FilesRenameDialog = ({ isOpen, title, onConfirm, onClose, onCancel }) => {
   const [newTitle, setNewTitle] = useState('');
 
   useEffect(() => {
@@ -51,4 +51,4 @@ const RenameDialog = ({ isOpen, title, onConfirm, onClose, onCancel }) => {
   );
 };
 
-export default RenameDialog;
+export default FilesRenameDialog;

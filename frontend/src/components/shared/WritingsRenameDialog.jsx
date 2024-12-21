@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 
-const RenameDialog = ({ isOpen, title, onConfirm, onClose }) => {
+const WritingsRenameDialog = ({ isOpen, title, onConfirm, onClose }) => {
   const [newName, setNewName] = useState(title || '');
 
   const handleSubmit = (e) => {
@@ -51,4 +51,4 @@ const RenameDialog = ({ isOpen, title, onConfirm, onClose }) => {
   );
 };
 
-export default RenameDialog;
+export default WritingsRenameDialog;
